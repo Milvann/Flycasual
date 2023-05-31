@@ -1,0 +1,41 @@
+###EXEMPLO DE COMO TRABALHO COM LÓGICA DIFUSA
+
+###importando o banco de dados
+library(readxl)
+p5v2018 <- read_excel("p5v2018.xls")
+View(p5v2018)
+
+
+##filtando e selecionando
+library(dplyr)
+Brazil <- p5v2018 %>% 
+  filter(country == "Brazil")
+names(Brazil)
+
+#instalar pacotes de lógica difusa
+install.packages("sets")
+library(sets)
+
+#definindo o alcance e a granulidade
+sets_options("Brazil", seq(from = -88, to = 9, by = 1))
+
+#Variáveis linguísticas
+
+
+variables <-
+  set(democ = 
+        fuzzy_partition(varnames = c(ndemo = -88, demozinho = 0, demozão = 8)),
+      autoc = 
+        fuzzy_partition(varnames = c(nautoc = -88, autoczinho = 0, autoczão = 9), FUN = fuzzy_cone, radius = 5),
+      qualidemo =
+        fuzzy_partition(varnames = c(transicao = 1, autocracia = 0, democracia = 1))
+      ,sd = 3.0
+  )
+
+#Regras para inferência
+
+rules <-
+  set(fuzzy_rule(democ %is% ndemo || autoc %is%
+                 nautoc,
+               qualidemo %is% transicao),
+  )
